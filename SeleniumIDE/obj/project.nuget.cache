@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "QUhsRmHlwf0=",
+  "dgSpecHash": "hCd+RWU/dqA=",
   "success": true,
-  "projectFilePath": "C:\\Users\\PC\\OneDrive\\Работен плот\\05-SeleniumIDE\\SeleniumIDE\\SeleniumIde.csproj",
+  "projectFilePath": "D:\\05-SeleniumIDE\\SeleniumIDE\\SeleniumIde.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\PC\\.nuget\\packages\\coverlet.collector\\3.1.2\\coverlet.collector.3.1.2.nupkg.sha512",
     "C:\\Users\\PC\\.nuget\\packages\\dotnetseleniumextras.waithelpers\\3.11.0\\dotnetseleniumextras.waithelpers.3.11.0.nupkg.sha512",
@@ -26,9 +26,9 @@
       "code": "NU1603",
       "level": "Warning",
       "message": "SeleniumIde depends on Selenium.WebDriver.ChromeDriver (>= 144.0.7559.133) but Selenium.WebDriver.ChromeDriver 144.0.7559.133 was not found. Selenium.WebDriver.ChromeDriver 144.0.7559.3100 was resolved instead.",
-      "projectPath": "C:\\Users\\PC\\OneDrive\\Работен плот\\05-SeleniumIDE\\SeleniumIDE\\SeleniumIde.csproj",
+      "projectPath": "D:\\05-SeleniumIDE\\SeleniumIDE\\SeleniumIde.csproj",
       "warningLevel": 1,
-      "filePath": "C:\\Users\\PC\\OneDrive\\Работен плот\\05-SeleniumIDE\\SeleniumIDE\\SeleniumIde.csproj",
+      "filePath": "D:\\05-SeleniumIDE\\SeleniumIDE\\SeleniumIde.csproj",
       "libraryId": "Selenium.WebDriver.ChromeDriver",
       "targetGraphs": [
         "net6.0"

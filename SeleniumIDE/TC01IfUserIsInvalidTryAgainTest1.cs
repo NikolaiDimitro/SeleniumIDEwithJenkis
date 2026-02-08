@@ -22,7 +22,7 @@ public class TC01IfUserIsInvalidTryAgainTest
     public void SetUp()
     {
         ChromeOptions options = new ChromeOptions();
-        options.AddArguments("headless");
+        options.AddArguments("--headless=new");
         options.AddArguments("no-sandbox");
         options.AddArguments("disable-dev-shm-usage");
         options.AddArguments("disable-gpu");
