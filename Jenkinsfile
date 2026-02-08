@@ -1,66 +1,71 @@
-pipeline{
-
+pipeline {
     agent any
 
-    stages{
+    environment {
+        CHROME_VERSION = "144.0.7559.133"
+        CHROMEDRIVER_VERSION = "144.0.7559.133"
+        CHROME_INSTALL_PATH = "C:/Program Files/Google/Chrome/Application"
+        CHROMEDRIVER_PATH = "C:/Program Files/Google/Chrome/Application"
+    }
 
-stage("Checkout"){
-            steps{
+    stages {
+        stage("Checkout Code") {
+            steps {
                 checkout scm
             }
         }
 
-stage("Setup .NET"){
-            steps{
+        stage("Set up .NET Core") {
+            steps {
                 bat "dotnet --version"
             }
         }
 
-        stage("Uninstall Chrome") {
+        stage("Uninstall Current Chrome") {
             steps {
-                bat '''
-                echo Uninstalling Chrome...
-                winget uninstall --id Google.Chrome -e --silent
-                '''
+                bat 'echo Uninstalling current Chrome...'
+                bat 'winget uninstall --id Google.Chrome -e --silent || echo Chrome not installed'
             }
         }
 
         stage("Install Specific Chrome Version") {
             steps {
-                bat '''
-                echo Installing specific Chrome version...
-                curl -L -o chrome_installer.exe https://dl.google.com/tag/s/appguid%3D%7B8A69D345-D564-463C-AFF1-A69D9E530F96%7D%26iid%3D%7B00000000-0000-0000-0000-000000000000%7D/googlechromestandaloneenterprise64.msi
-                msiexec /i chrome_installer.exe /qn
-                '''
+                bat "powershell -ExecutionPolicy Bypass -File install_chrome.ps1"
             }
         }
 
-        stage("Download ChromeDriver") {
+        stage("Download and Install ChromeDriver") {
             steps {
-                bat '''
-                echo Downloading ChromeDriver...
-                curl -L -o chromedriver.zip https://storage.googleapis.com/chrome-for-testing-public/144.0.7559.133/win64/chromedriver-win64.zip
-                tar -xf chromedriver.zip
-                '''
+                bat "powershell -ExecutionPolicy Bypass -File install_chromedriver.ps1"
             }
         }
 
-        stage("Restore"){
-            steps{
+        stage("Restore Dependencies") {
+            steps {
                 bat "dotnet restore"
             }
         }
-    
-        stage("Build"){
-            steps{
+
+        stage("Build Solution") {
+            steps {
                 bat "dotnet build"
             }
         }
-    
-        stage("Test"){
-            steps{
-                bat "dotnet test"
+
+        stage("Run Selenium Tests") {
+            steps {
+                bat 'dotnet test SeleniumProject1/SeleniumProject1.csproj --logger "trx;LogFileName=test_results1.trx"'
+                bat 'dotnet test SeleniumProject2/SeleniumProject2.csproj --logger "trx;LogFileName=test_results2.trx"'
+                bat 'dotnet test SeleniumProject3/SeleniumProject3.csproj --logger "trx;LogFileName=test_results3.trx"'
+                bat 'dotnet test SeleniumProject4/SeleniumProject4.csproj --logger "trx;LogFileName=test_results4.trx"'
             }
         }
-}
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: "**/*.trx", fingerprint: true
+            junit "**/*.trx"
+        }
+    }
 }
