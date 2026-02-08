@@ -26,9 +26,8 @@ pipeline {
         bat 'echo Uninstalling current Chrome...'
         bat 'winget uninstall --id Google.Chrome -e --silent || echo "Skipping Chrome uninstall"'
     }
-
-    continueOnError true
 }
+
 
         stage("Install Specific Chrome Version") {
             steps {
