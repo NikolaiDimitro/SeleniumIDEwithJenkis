@@ -27,14 +27,13 @@ pipeline {
 
         stage("Install Chrome") {
             steps {
-                // Поправи пътя спрямо твоя workspace
-                powershell script: "powershell -ExecutionPolicy Bypass -File Selenium/scripts/install_chrome.ps1", returnStatus: true
+                powershell script: "powershell -ExecutionPolicy Bypass -File scripts/install_chrome.ps1", returnStatus: true
             }
         }
 
         stage("Install ChromeDriver") {
             steps {
-                powershell script: "powershell -ExecutionPolicy Bypass -File Selenium/scripts/install_chromedriver.ps1", returnStatus: true
+                powershell script: "powershell -ExecutionPolicy Bypass -File scripts/install_chromedriver.ps1", returnStatus: true
             }
         }
 
@@ -52,8 +51,8 @@ pipeline {
 
         stage("Run Selenium Tests") {
             steps {
-                // Поправи пътищата спрямо действителните csproj файлове
-                bat 'dotnet test SeleniumIDE.Tests/SeleniumIDE.Tests.csproj --logger "trx;LogFileName=test_results1.trx"'
+                // Поправи пътя до csproj според твоя репо
+                bat 'dotnet test SeleniumIDE/SeleniumIde.csproj --logger "trx;LogFileName=test_results.trx"'
             }
         }
     }
