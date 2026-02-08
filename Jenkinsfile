@@ -4,8 +4,6 @@ pipeline {
     environment {
         CHROME_VERSION = "144.0.7559.133"
         CHROMEDRIVER_VERSION = "144.0.7559.133"
-        CHROME_INSTALL_PATH = "C:/Program Files/Google/Chrome/Application"
-        CHROMEDRIVER_PATH = "C:/Program Files/Google/Chrome/Application"
     }
 
     stages {
@@ -21,22 +19,22 @@ pipeline {
             }
         }
 
-        // Премахваме winget uninstall, защото не работи под Jenkins Service
         stage("Skip Chrome Uninstall") {
             steps {
                 echo "Skipping Chrome uninstall on Jenkins"
             }
         }
 
-        stage("Install Specific Chrome Version") {
+        stage("Install Chrome") {
             steps {
-                powershell script: "powershell -ExecutionPolicy Bypass -File install_chrome.ps1", returnStatus: true
+                // Поправи пътя спрямо твоя workspace
+                powershell script: "powershell -ExecutionPolicy Bypass -File Selenium/scripts/install_chrome.ps1", returnStatus: true
             }
         }
 
-        stage("Download and Install ChromeDriver") {
+        stage("Install ChromeDriver") {
             steps {
-                powershell script: "powershell -ExecutionPolicy Bypass -File install_chromedriver.ps1", returnStatus: true
+                powershell script: "powershell -ExecutionPolicy Bypass -File Selenium/scripts/install_chromedriver.ps1", returnStatus: true
             }
         }
 
@@ -54,20 +52,15 @@ pipeline {
 
         stage("Run Selenium Tests") {
             steps {
-                bat 'dotnet test SeleniumProject1/SeleniumProject1.csproj --logger "trx;LogFileName=test_results1.trx"'
-                bat 'dotnet test SeleniumProject2/SeleniumProject2.csproj --logger "trx;LogFileName=test_results2.trx"'
-                bat 'dotnet test SeleniumProject3/SeleniumProject3.csproj --logger "trx;LogFileName=test_results3.trx"'
-                bat 'dotnet test SeleniumProject4/SeleniumProject4.csproj --logger "trx;LogFileName=test_results4.trx"'
+                // Поправи пътищата спрямо действителните csproj файлове
+                bat 'dotnet test SeleniumIDE.Tests/SeleniumIDE.Tests.csproj --logger "trx;LogFileName=test_results1.trx"'
             }
         }
     }
 
     post {
         always {
-        
             archiveArtifacts artifacts: "**/*.trx", fingerprint: true
-
-    
             junit "**/*.trx"
         }
     }
