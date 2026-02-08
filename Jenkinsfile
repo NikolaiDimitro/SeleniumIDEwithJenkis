@@ -21,23 +21,22 @@ pipeline {
             }
         }
 
-        stage("Uninstall Current Chrome") {
-    steps {
-        bat 'echo Uninstalling current Chrome...'
-        bat 'winget uninstall --id Google.Chrome -e --silent || echo "Skipping Chrome uninstall"'
-    }
-}
-
+        // Премахваме winget uninstall, защото не работи под Jenkins Service
+        stage("Skip Chrome Uninstall") {
+            steps {
+                echo "Skipping Chrome uninstall on Jenkins"
+            }
+        }
 
         stage("Install Specific Chrome Version") {
             steps {
-                bat "powershell -ExecutionPolicy Bypass -File install_chrome.ps1"
+                powershell script: "powershell -ExecutionPolicy Bypass -File install_chrome.ps1", returnStatus: true
             }
         }
 
         stage("Download and Install ChromeDriver") {
             steps {
-                bat "powershell -ExecutionPolicy Bypass -File install_chromedriver.ps1"
+                powershell script: "powershell -ExecutionPolicy Bypass -File install_chromedriver.ps1", returnStatus: true
             }
         }
 
@@ -65,7 +64,10 @@ pipeline {
 
     post {
         always {
+        
             archiveArtifacts artifacts: "**/*.trx", fingerprint: true
+
+    
             junit "**/*.trx"
         }
     }
