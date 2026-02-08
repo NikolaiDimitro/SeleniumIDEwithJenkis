@@ -2,8 +2,7 @@ pipeline {
     agent any
 
     environment {
-        CHROME_VERSION = "144.0.7559.133"
-        CHROMEDRIVER_VERSION = "144.0.7559.133"
+        DOTNET_VERSION = "6.0"
     }
 
     stages {
@@ -16,24 +15,6 @@ pipeline {
         stage("Set up .NET Core") {
             steps {
                 bat "dotnet --version"
-            }
-        }
-
-        stage("Skip Chrome Uninstall") {
-            steps {
-                echo "Skipping Chrome uninstall on Jenkins"
-            }
-        }
-
-        stage("Install Chrome") {
-            steps {
-                powershell script: "powershell -ExecutionPolicy Bypass -File scripts/install_chrome.ps1", returnStatus: true
-            }
-        }
-
-        stage("Install ChromeDriver") {
-            steps {
-                powershell script: "powershell -ExecutionPolicy Bypass -File scripts/install_chromedriver.ps1", returnStatus: true
             }
         }
 
@@ -51,17 +32,20 @@ pipeline {
 
         stage("Run Selenium Tests") {
             steps {
-                // Пътят към твоя .csproj файл
+                // Стартираме тестовете и генерираме .trx файл в TestResults папката
                 bat 'dotnet test SeleniumIDE/SeleniumIde.csproj --logger "trx;LogFileName=test_results.trx" --results-directory TestResults'
             }
         }
-    } // <-- затваряш stages тук
+    }
 
-    // post блокът трябва да е **на същото ниво като stages**, не вътре в stages
     post {
         always {
-            archiveArtifacts artifacts: "**/*.trx", fingerprint: true
-            junit "**/*.trx"
+            // Архивиране на .trx файловете
+            archiveArtifacts artifacts: "TestResults/*.trx", fingerprint: true
+            
+            // Пращане на резултатите към JUnit step
+            junit testResults: "TestResults/*.trx", allowEmptyResults: true
         }
     }
 }
+
