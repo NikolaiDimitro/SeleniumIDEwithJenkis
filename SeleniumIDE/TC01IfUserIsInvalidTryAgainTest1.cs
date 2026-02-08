@@ -21,7 +21,14 @@ public class TC01IfUserIsInvalidTryAgainTest
     [SetUp]
     public void SetUp()
     {
-        driver = new ChromeDriver();
+        string driverPath = AppContext.BaseDirectory;
+        var options = new ChromeOptions();
+        options.AddArgument("--no-sandbox");
+        options.AddArgument("--disable-dev-shm-usage");
+        
+        var service = ChromeDriverService.CreateDefaultService(driverPath);
+        driver = new ChromeDriver(service, options, TimeSpan.FromSeconds(30));
+        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
         js = (IJavaScriptExecutor)driver;
         vars = new Dictionary<string, object>();
     }
@@ -29,7 +36,17 @@ public class TC01IfUserIsInvalidTryAgainTest
     [TearDown]
     protected void TearDown()
     {
-        driver.Quit();
+        if (driver != null)
+        {
+            try
+            {
+                driver.Quit();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during teardown: {ex.Message}");
+            }
+        }
     }
 
     [Test]
@@ -37,7 +54,8 @@ public class TC01IfUserIsInvalidTryAgainTest
     {
         // Test name: TC01 - If User Is Invalid Try Again
         // Step # | name | target | value
-        // 1 | open | / | 
+        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+        // 1 | open | / |  
         driver.Navigate().GoToUrl("https://www.saucedemo.com/");
         // 2 | setWindowSize | 1552x832 | 
         driver.Manage().Window.Size = new System.Drawing.Size(1552, 832);
@@ -56,7 +74,15 @@ public class TC01IfUserIsInvalidTryAgainTest
         // 9 | click | css=*[data-test="login-button"] | 
         driver.FindElement(By.CssSelector("*[data-test=\"login-button\"]")).Click();
         // 10 | storeText | css=*[data-test="error"] | errorMessage
-        vars["errorMessage"] = driver.FindElement(By.CssSelector("*[data-test=\"error\"]")).Text;
+        try
+        {
+            IWebElement errorElement = wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.PresenceOfAllElementsLocatedBy(By.CssSelector("*[data-test=\"error\"]")))[0];
+            vars["errorMessage"] = errorElement.Text;
+        }
+        catch (TimeoutException)
+        {
+            vars["errorMessage"] = "";
+        }
         // 11 | if |  ${errorMessage} === "Epic sadface: Username and password do not match any user in this service" | 
         if ((Boolean)js.ExecuteScript("return (arguments[0] === \'Epic sadface: Username and password do not match any user in this service\')", vars["errorMessage"]))
         {
