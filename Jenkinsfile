@@ -50,17 +50,18 @@ pipeline {
         }
 
         stage("Run Selenium Tests") {
-    steps {
-        // Пътят към твоя .csproj файл
-        bat 'dotnet test SeleniumIDE/SeleniumIde.csproj --logger "trx;LogFileName=test_results.trx" --results-directory TestResults'
-    }
-}
+            steps {
+                // Пътят към твоя .csproj файл
+                bat 'dotnet test SeleniumIDE/SeleniumIde.csproj --logger "trx;LogFileName=test_results.trx" --results-directory TestResults'
+            }
+        }
+    } // <-- затваряш stages тук
 
+    // post блокът трябва да е **на същото ниво като stages**, не вътре в stages
     post {
         always {
             archiveArtifacts artifacts: "**/*.trx", fingerprint: true
             junit "**/*.trx"
         }
     }
-}
 }
