@@ -50,12 +50,11 @@ pipeline {
         }
 
         stage("Run Selenium Tests") {
-            steps {
-                // Поправи пътя до csproj според твоя репо
-                bat 'dotnet test SeleniumIDE/SeleniumIde.csproj --logger "trx;LogFileName=test_results.trx"'
-            }
-        }
+    steps {
+        // Пътят към твоя .csproj файл
+        bat 'dotnet test SeleniumIDE/SeleniumIde.csproj --logger "trx;LogFileName=test_results.trx" --results-directory TestResults'
     }
+}
 
     post {
         always {
@@ -63,4 +62,5 @@ pipeline {
             junit "**/*.trx"
         }
     }
+}
 }
